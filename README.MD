@@ -1,6 +1,6 @@
 # GitHub Plugin for Pinegrow
 
-This repo accompanies a tutorial for creating a plugin from scratch for Pinegrow. This plugin will integrate GitHub versioning into the Pinegrow App. It is currently planned to have a limited number of commands through the Octokit API, including
+This repo accompanies a tutorial (hosted at [robertmeans.net](https://robertmeans.net)) for creating a plugin from scratch for Pinegrow. This plugin will integrate GitHub versioning into the Pinegrow App. It is currently planned to have a limited number of commands through the Octokit API, including
 
 - Creating a repo
 - Cloning a repo
