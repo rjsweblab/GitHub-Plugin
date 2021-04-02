@@ -1,0 +1,22 @@
+{
+  "name": "github-plugin",
+  "version": "1.0.0",
+  "description": "This repo accompanies a tutorial (hosted at [robertmeans.net](https://robertmeans.net)) for creating a plugin from scratch for Pinegrow. This plugin will integrate GitHub versioning into the Pinegrow App. It is currently planned to have a limited number of commands through the Octokit API, including",
+  "main": "GHForPG.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BoDonkey/GitHub-Plugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BoDonkey/GitHub-Plugin/issues"
+  },
+  "homepage": "https://github.com/BoDonkey/GitHub-Plugin#readme",
+  "dependencies": {
+    "@octokit/rest": "^18.5.2"
+  }
+}
