@@ -1,9 +1,9 @@
 $(function () {
     $('body').one('pinegrow-ready', function (e, pinegrow) {
-        
+
         //Add a framework id, it should be unique to this framework and version. Best practice is to define the prefix as a variable that can be used throughout the framework.
         let framework_id = 'shd_github_for_pinegrow';
-        
+
         //Instantiate a new framework
         var framework = new PgFramework(framework_id, 'GitHub-for-Pinegrow');
 
@@ -28,7 +28,30 @@ $(function () {
         // Tell Pinegrow about the framework
         pinegrow.addFramework(framework);
 
-	//uncomment the line below for debugging - opens devtools on Pinegrow Launch
-	require('nw.gui').Window.get().showDevTools();
+        //uncomment the line below for debugging - opens devtools on Pinegrow Launch
+        require('nw.gui').Window.get().showDevTools();
+
+        //HTML for the main menu
+        let $menu = $(`
+        <li id="github-menu" class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span>GitHub</span></a>
+            <ul class="dropdown-menu">
+                <li><a href="#" id="create-repo">Create New Repo</a></li>
+                <li><a href="#" id="clone-repo">Clone Existing Repo</a></li>
+                <li><a href="#" id="stage-changes">Stage Changes</a></li>
+                <li><a href="#" id="commit-changes">Commit Changes</a></li>
+                <hr>
+                <li><a href="#" id="gh-settings">Settings...</a></li>
+            </ul>
+        </li>
+        `);
+
+        //Adds the main GitHub menu to Pinegrow
+        pinegrow.addPluginControlToTopbar(framework, $menu, false, function () {
+            let theProject = pinegrow.getCurrentProject();
+            if(theProject) return true;
+            return false;
+        });
+
     });
 });
