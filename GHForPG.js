@@ -27,5 +27,8 @@ $(function () {
 
         // Tell Pinegrow about the framework
         pinegrow.addFramework(framework);
+
+	//uncomment the line below for debugging - opens devtools on Pinegrow Launch
+	require('nw.gui').Window.get().showDevTools();
     });
 });
