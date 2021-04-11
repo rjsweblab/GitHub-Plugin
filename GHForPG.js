@@ -38,8 +38,6 @@ $(function () {
             <ul class="dropdown-menu">
                 <li><a href="#" id="create-repo">Create New Repo</a></li>
                 <li><a href="#" id="clone-repo">Clone Existing Repo</a></li>
-                <li><a href="#" id="stage-changes">Stage Changes</a></li>
-                <li><a href="#" id="commit-changes">Commit Changes</a></li>
                 <hr>
                 <li><a href="#" id="gh-settings">Settings...</a></li>
             </ul>
@@ -47,11 +45,7 @@ $(function () {
         `);
 
         //Adds the main GitHub menu to Pinegrow
-        pinegrow.addPluginControlToTopbar(framework, $menu, false, function () {
-            let theProject = pinegrow.getCurrentProject();
-            if(theProject) return true;
-            return false;
-        });
+        pinegrow.addPluginControlToTopbar(framework, $menu, true);
 
     });
 });
