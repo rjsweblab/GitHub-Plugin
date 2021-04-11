@@ -35,7 +35,7 @@ $(function () {
         let $menu = $(`
         <li id="github-menu" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span>GitHub</span></a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" id="gh-dropdown">
                 <li><a href="#" id="create-repo">Create New Repo</a></li>
                 <li><a href="#" id="clone-repo">Clone Existing Repo</a></li>
                 <hr>
@@ -44,8 +44,28 @@ $(function () {
         </li>
         `);
 
-        //Adds the main GitHub menu to Pinegrow
+        //Adds the main GitHub menu to Pinegrow upon open
         pinegrow.addPluginControlToTopbar(framework, $menu, true);
 
+        //Adds project specific GitHub menu items
+        pinegrow.addEventHandler('on_project_loaded', function(pagenull, project) {
+            let targetMenu = document.getElementById('gh-dropdown');
+            console.log({targetMenu});
+            let newItems = document.createDocumentFragment();
+            let listOne = document.createElement('li');
+            let menuItemOne = '<a href="#" id="stage-changes">Stage Changes</a>';
+            listOne.innerHTML = menuItemOne;
+            newItems.appendChild(listOne);
+            let listTwo = document.createElement('li');
+            let menuItemTwo = '<a href="#" id="commit-changes">Commit Changes</a>';
+            listTwo.innerHTML = menuItemTwo;
+            newItems.appendChild(listTwo);
+            let menuDivider = targetMenu.children[2];
+            targetMenu.insertBefore(newItems, menuDivider);
+        });
+
+        //REMINDER ADD EVENT HANDLER FOR PROJECT CLOSE
+        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {//FILL THIS IN
+        });
     });
 });
