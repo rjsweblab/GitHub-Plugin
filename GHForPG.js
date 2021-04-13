@@ -31,6 +31,16 @@ $(function () {
         //uncomment the line below for debugging - opens devtools on Pinegrow Launch
         require('nw.gui').Window.get().showDevTools();
 
+        //Function to add the click listeners to the initial menu items
+        var addInitialListeners = function() {
+            return;
+        }
+
+        //Function to add project specific click listeners
+        var addAdditionalListeners = function() {
+            return;
+        }
+
         //HTML for the main menu
         let $menu = $(`
         <li id="github-menu" class="dropdown">
@@ -45,12 +55,13 @@ $(function () {
         `);
 
         //Adds the main GitHub menu to Pinegrow upon open
-        pinegrow.addPluginControlToTopbar(framework, $menu, true);
+        pinegrow.addPluginControlToTopbar(framework, $menu, true, function(){
+            addInitialListeners();
+        });
 
         //Adds project specific GitHub menu items
         pinegrow.addEventHandler('on_project_loaded', function(pagenull, project) {
             let targetMenu = document.getElementById('gh-dropdown');
-            console.log({targetMenu});
             let newItems = document.createDocumentFragment();
             let listOne = document.createElement('li');
             let menuItemOne = '<a href="#" id="stage-changes">Stage Changes</a>';
@@ -62,10 +73,13 @@ $(function () {
             newItems.appendChild(listTwo);
             let menuDivider = targetMenu.children[2];
             targetMenu.insertBefore(newItems, menuDivider);
+            addAdditionalListeners();
         });
 
-        //REMINDER ADD EVENT HANDLER FOR PROJECT CLOSE
-        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {//FILL THIS IN
+        //Removes extra menu items on project close
+        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {
+            document.getElementById('stage-changes').remove();
+            document.getElementById('commit-changes').remove();
         });
     });
 });
