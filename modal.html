@@ -1,0 +1,29 @@
+<div class="modal pg-show-modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="user-name" class="form-control-label">User Name:</label>
+                        <input type="text" class="form-control" id="user-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="gh-token" class="form-control-label">Personal Account Token:</label>
+                        <input class="form-control" id="gh-token">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="gh-clear-settings" class="btn btn-secondary">Clear settings</button>
+                <button type="button" id="gh-save-settings" class="btn btn-primary">Save Settings</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
