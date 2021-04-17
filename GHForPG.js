@@ -64,13 +64,14 @@ $(function () {
             let targetMenu = document.getElementById('gh-dropdown');
             let newItems = document.createDocumentFragment();
             let listOne = document.createElement('li');
+            // rjs: removed variables menuItemOne and menuItemTwo
             listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
             newItems.appendChild(listOne);
             let listTwo = document.createElement('li');
             listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
             newItems.appendChild(listTwo);
-            //using namedITem is more robust then using hardcoded index-number
-            // this namedItem needs an id on the element <hr> in the menu
+            // rjs: using namedITem is more robust then using hardcoded index-number
+            // rjs: this namedItem needs an id on the element <hr> in the menu
             let menuDivider = targetMenu.children.namedItem('ruler-one');
             targetMenu.insertBefore(newItems, menuDivider);
             console.log(targetMenu.children);
