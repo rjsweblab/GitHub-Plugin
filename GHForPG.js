@@ -31,14 +31,40 @@ $(function () {
         //uncomment the line below for debugging - opens devtools on Pinegrow Launch
         require('nw.gui').Window.get().showDevTools();
 
+        var fetchHtmlFragment = async function(htmlLocation) {
+            const fs = require('fs');
+            try {
+                return await fs.readFileSync(htmlLocation, 'utf-8');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
         //Function to add the click listeners to the initial menu items
         var addInitialListeners = function() {
+            //Adds the click listener to the settings menu item
+            let settingsMenuItem = document.getElementById('gh-settings');
+            settingsMenuItem.addEventListener('click', function(){
+                $('#settingsModal').modal('show');
+            });
             return;
         }
 
         //Function to add project specific click listeners
         var addAdditionalListeners = function() {
             return;
+        }
+
+        //Function to add settings modal to the page
+        var addSettingsModal = async function() {
+            let modalDiv = document.createElement('div');
+            modalDiv.setAttribute('id', 'settingsModalContainer');
+            let theApp = document.getElementById('pgapp');
+            theApp.appendChild(modalDiv);
+            const frameBase = framework.getBaseUrl();
+            let modalFile = crsaMakeFileFromUrl(frameBase + '/modal.html');
+            let settingsModalContainer = document.getElementById('settingsModalContainer');
+            settingsModalContainer.innerHTML = await fetchHtmlFragment(modalFile);
         }
 
         //HTML for the main menu
@@ -56,6 +82,7 @@ $(function () {
 
         //Adds the main GitHub menu to Pinegrow upon open
         pinegrow.addPluginControlToTopbar(framework, $menu, true, function(){
+            addSettingsModal();
             addInitialListeners();
         });
 
