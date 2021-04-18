@@ -74,7 +74,7 @@ $(function () {
             <ul class="dropdown-menu" id="gh-dropdown">
                 <li><a href="#" id="create-repo">Create New Repo</a></li>
                 <li><a href="#" id="clone-repo">Clone Existing Repo</a></li>
-                <hr>
+                <hr id="ruler-one">
                 <li><a href="#" id="gh-settings">Settings...</a></li>
             </ul>
         </li>
@@ -86,19 +86,21 @@ $(function () {
             addInitialListeners();
         });
 
-        //Adds project specific GitHub menu items
+        //Adds project specific GitHub menu items - note need to solve problem with opening
+        //project in a new window not triggering menu addition 
         pinegrow.addEventHandler('on_project_loaded', function(pagenull, project) {
             let targetMenu = document.getElementById('gh-dropdown');
             let newItems = document.createDocumentFragment();
             let listOne = document.createElement('li');
-            let menuItemOne = '<a href="#" id="stage-changes">Stage Changes</a>';
-            listOne.innerHTML = menuItemOne;
+            // rjs: removed variables menuItemOne and menuItemTwo
+            listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
             newItems.appendChild(listOne);
             let listTwo = document.createElement('li');
-            let menuItemTwo = '<a href="#" id="commit-changes">Commit Changes</a>';
-            listTwo.innerHTML = menuItemTwo;
+            listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
             newItems.appendChild(listTwo);
-            let menuDivider = targetMenu.children[2];
+            // rjs: using namedITem is more robust then using hardcoded index-number
+            // rjs: this namedItem needs an id on the element <hr> in the menu
+            let menuDivider = targetMenu.children.namedItem('ruler-one');
             targetMenu.insertBefore(newItems, menuDivider);
             addAdditionalListeners();
         });
