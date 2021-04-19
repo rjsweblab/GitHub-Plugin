@@ -96,10 +96,7 @@ $(function () {
         pinegrow.addEventHandler('on_project_loaded', addToGHMenu);
 
         //Removes extra menu items on project close
-        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {
-            document.getElementById('stage-changes').remove();
-            document.getElementById('commit-changes').remove();
-        });
+        pinegrow.addEventHandler('on_project_closed', removeFromGHMenu);
 
         function addToGHMenu (pagenull, project) {
           // first check existence of additional menu to avoid double entries to the GH Menu
@@ -119,6 +116,11 @@ $(function () {
             targetMenu.insertBefore(newItems, menuDivider);
             addAdditionalListeners();
           }
+        }
+
+        function removeFromGHMenu (pagenull, project) {
+          document.getElementById('stage-changes').remove();
+          document.getElementById('commit-changes').remove();
         }
     });
 });
