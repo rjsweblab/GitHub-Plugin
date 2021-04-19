@@ -84,31 +84,38 @@ $(function () {
         pinegrow.addPluginControlToTopbar(framework, $menu, true, function(){
             addSettingsModal();
             addInitialListeners();
+            // Check if we are opening another project in a new window 
+            if (pinegrow.getCurrentProject()) {
+              addToGHMenu();
+            }
         });
 
-        //Adds project specific GitHub menu items - note need to solve problem with opening
+        //Adds project specific GitHub menu items 
+        //Replaced anonymous callback function with 'addToGHMenu' to solve problem with opening
         //project in a new window not triggering menu addition 
-        pinegrow.addEventHandler('on_project_loaded', function(pagenull, project) {
-            let targetMenu = document.getElementById('gh-dropdown');
-            let newItems = document.createDocumentFragment();
-            let listOne = document.createElement('li');
-            // rjs: removed variables menuItemOne and menuItemTwo
-            listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
-            newItems.appendChild(listOne);
-            let listTwo = document.createElement('li');
-            listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
-            newItems.appendChild(listTwo);
-            // rjs: using namedITem is more robust then using hardcoded index-number
-            // rjs: this namedItem needs an id on the element <hr> in the menu
-            let menuDivider = targetMenu.children.namedItem('ruler-one');
-            targetMenu.insertBefore(newItems, menuDivider);
-            addAdditionalListeners();
-        });
+        pinegrow.addEventHandler('on_project_loaded', addToGHMenu);
 
         //Removes extra menu items on project close
         pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {
             document.getElementById('stage-changes').remove();
             document.getElementById('commit-changes').remove();
         });
+
+        function addToGHMenu (pagenull, project) {
+          let targetMenu = document.getElementById('gh-dropdown');
+          let newItems = document.createDocumentFragment();
+          let listOne = document.createElement('li');
+          // rjs: removed variables menuItemOne and menuItemTwo
+          listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
+          newItems.appendChild(listOne);
+          let listTwo = document.createElement('li');
+          listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
+          newItems.appendChild(listTwo);
+          // rjs: using namedITem is more robust then using hardcoded index-number
+          // rjs: this namedItem needs an id on the element <hr> in the menu
+          let menuDivider = targetMenu.children.namedItem('ruler-one');
+          targetMenu.insertBefore(newItems, menuDivider);
+          addAdditionalListeners();
+        }
     });
 });
