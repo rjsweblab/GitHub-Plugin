@@ -96,12 +96,14 @@ $(function () {
         pinegrow.addEventHandler('on_project_loaded', addToGHMenu);
 
         //Removes extra menu items on project close
-        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {
-            document.getElementById('stage-changes').remove();
-            document.getElementById('commit-changes').remove();
-        });
+        pinegrow.addEventHandler('on_project_closed', removeFromGHMenu);
 
         function addToGHMenu (pagenull, project) {
+          /* Avoid duplicate entries in the Github menu when opening a project before 
+             closing the active project */
+             if (document.getElementById('stage-changes')) {
+              removeFromGHMenu();
+            }
           let targetMenu = document.getElementById('gh-dropdown');
           let newItems = document.createDocumentFragment();
           let listOne = document.createElement('li');
@@ -116,6 +118,11 @@ $(function () {
           let menuDivider = targetMenu.children.namedItem('ruler-one');
           targetMenu.insertBefore(newItems, menuDivider);
           addAdditionalListeners();
+        }
+
+        function removeFromGHMenu (pagenull, project) {
+          document.getElementById('stage-changes').remove();
+          document.getElementById('commit-changes').remove();
         }
     });
 });
