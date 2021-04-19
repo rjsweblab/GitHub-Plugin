@@ -102,20 +102,23 @@ $(function () {
         });
 
         function addToGHMenu (pagenull, project) {
-          let targetMenu = document.getElementById('gh-dropdown');
-          let newItems = document.createDocumentFragment();
-          let listOne = document.createElement('li');
-          // rjs: removed variables menuItemOne and menuItemTwo
-          listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
-          newItems.appendChild(listOne);
-          let listTwo = document.createElement('li');
-          listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
-          newItems.appendChild(listTwo);
-          // rjs: using namedITem is more robust then using hardcoded index-number
-          // rjs: this namedItem needs an id on the element <hr> in the menu
-          let menuDivider = targetMenu.children.namedItem('ruler-one');
-          targetMenu.insertBefore(newItems, menuDivider);
-          addAdditionalListeners();
+          // first check existence of additional menu to avoid double entries to the GH Menu
+          if (!document.getElementById('stage-changes')) {
+            let targetMenu = document.getElementById('gh-dropdown');
+            let newItems = document.createDocumentFragment();
+            let listOne = document.createElement('li');
+            // rjs: removed variables menuItemOne and menuItemTwo
+            listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
+            newItems.appendChild(listOne);
+            let listTwo = document.createElement('li');
+            listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
+            newItems.appendChild(listTwo);
+            // rjs: using namedITem is more robust then using hardcoded index-number
+            // rjs: this namedItem needs an id on the element <hr> in the menu
+            let menuDivider = targetMenu.children.namedItem('ruler-one');
+            targetMenu.insertBefore(newItems, menuDivider);
+            addAdditionalListeners();
+          }
         }
     });
 });
