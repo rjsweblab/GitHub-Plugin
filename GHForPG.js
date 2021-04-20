@@ -31,14 +31,70 @@ $(function () {
         //uncomment the line below for debugging - opens devtools on Pinegrow Launch
         require('nw.gui').Window.get().showDevTools();
 
+        var fetchHtmlFragment = async function(htmlLocation) {
+            const fs = require('fs');
+            try {
+                return await fs.readFileSync(htmlLocation, 'utf-8');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
         //Function to add the click listeners to the initial menu items
         var addInitialListeners = function() {
+            //Adds the click listener to the settings menu item
+            let settingsMenuItem = document.getElementById('gh-settings');
+            settingsMenuItem.addEventListener('click', function(){
+                $('#settingsModal').modal('show');
+            });
             return;
         }
 
         //Function to add project specific click listeners
         var addAdditionalListeners = function() {
             return;
+        }
+
+        //Function to poulate settings with existing values, clear settings, save new settings.
+        var manipulateSettingsFields = function() {
+            let userNameField = document.getElementById('gh-user-name');
+            let accountTokenField = document.getElementById('gh-token');
+            let clearSettingsButton = document.getElementById('gh-clear-settings');
+            let saveSettingsButton = document.getElementById('gh-save-settings');
+
+            console.log({saveSettingsButton});
+            let cancelSettingsButton = document.getElementById('gh-cancel-settings');
+            if(localStorage.getItem('gh-settings-user-name')){
+                userNameField.value = localStorage.getItem('gh-settings-user-name');
+                accountTokenField.value = localStorage.getItem('gh-settings-token');
+            };
+            clearSettingsButton.addEventListener('click', function(){
+                localStorage.removeItem('gh-settings-user-name');
+                localStorage.removeItem('gh-settings-token');
+                userNameField.value = '';
+                accountTokenField.value = '';
+            });
+            saveSettingsButton.addEventListener('click', function(){
+                localStorage.setItem('gh-settings-user-name', userNameField.value);
+                localStorage.setItem('gh-settings-token', accountTokenField.value);
+                saveSettingsButton.className = 'btn btn-success';
+            });
+            cancelSettingsButton.addEventListener('click', function(){
+                saveSettingsButton.className = 'btn btn-primary';
+            })
+        }
+
+        //Function to add settings modal to the page
+        var addSettingsModal = async function() {
+            let modalDiv = document.createElement('div');
+            modalDiv.setAttribute('id', 'settingsModalContainer');
+            let theApp = document.getElementById('pgapp');
+            theApp.appendChild(modalDiv);
+            const frameBase = framework.getBaseUrl();
+            let modalFile = crsaMakeFileFromUrl(frameBase + '/modal.html');
+            let settingsModalContainer = document.getElementById('settingsModalContainer');
+            settingsModalContainer.innerHTML = await fetchHtmlFragment(modalFile);
+            manipulateSettingsFields();
         }
 
         //HTML for the main menu
@@ -48,7 +104,7 @@ $(function () {
             <ul class="dropdown-menu" id="gh-dropdown">
                 <li><a href="#" id="create-repo">Create New Repo</a></li>
                 <li><a href="#" id="clone-repo">Clone Existing Repo</a></li>
-                <hr>
+                <hr id="ruler-one">
                 <li><a href="#" id="gh-settings">Settings...</a></li>
             </ul>
         </li>
@@ -56,30 +112,45 @@ $(function () {
 
         //Adds the main GitHub menu to Pinegrow upon open
         pinegrow.addPluginControlToTopbar(framework, $menu, true, function(){
+            addSettingsModal();
             addInitialListeners();
+            // Check if we are opening another project in a new window 
+            if (pinegrow.getCurrentProject()) {
+              addToGHMenu();
+            }
         });
 
-        //Adds project specific GitHub menu items
-        pinegrow.addEventHandler('on_project_loaded', function(pagenull, project) {
+        //Adds project specific GitHub menu items 
+        //Replaced anonymous callback function with 'addToGHMenu' to solve problem with opening
+        //project in a new window not triggering menu addition 
+        pinegrow.addEventHandler('on_project_loaded', addToGHMenu);
+
+        //Removes extra menu items on project close
+        pinegrow.addEventHandler('on_project_closed', removeFromGHMenu);
+
+        function addToGHMenu () {
+          // first check existence of additional menu to avoid double entries to the GH Menu
+          if (!document.getElementById('stage-changes')) {
             let targetMenu = document.getElementById('gh-dropdown');
             let newItems = document.createDocumentFragment();
             let listOne = document.createElement('li');
-            let menuItemOne = '<a href="#" id="stage-changes">Stage Changes</a>';
-            listOne.innerHTML = menuItemOne;
+            // rjs: removed variables menuItemOne and menuItemTwo
+            listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
             newItems.appendChild(listOne);
             let listTwo = document.createElement('li');
-            let menuItemTwo = '<a href="#" id="commit-changes">Commit Changes</a>';
-            listTwo.innerHTML = menuItemTwo;
+            listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
             newItems.appendChild(listTwo);
-            let menuDivider = targetMenu.children[2];
+            // rjs: using namedItem is more robust then using hardcoded index-number
+            // rjs: this namedItem needs an id on the element <hr> in the menu
+            let menuDivider = targetMenu.children.namedItem('ruler-one');
             targetMenu.insertBefore(newItems, menuDivider);
             addAdditionalListeners();
-        });
+          }
+        }
 
-        //Removes extra menu items on project close
-        pinegrow.addEventHandler('on_project_closed', function(pagenull, project) {
-            document.getElementById('stage-changes').remove();
-            document.getElementById('commit-changes').remove();
-        });
+        function removeFromGHMenu (pagenull, project) {
+          document.getElementById('stage-changes').remove();
+          document.getElementById('commit-changes').remove();
+        }
     });
 });
