@@ -92,8 +92,7 @@ $(function () {
             theApp.appendChild(modalDiv);
             const frameBase = framework.getBaseUrl();
             let modalFile = crsaMakeFileFromUrl(frameBase + '/modal.html');
-            let settingsModalContainer = document.getElementById('settingsModalContainer');
-            settingsModalContainer.innerHTML = await fetchHtmlFragment(modalFile);
+            modalDiv.innerHTML = await fetchHtmlFragment(modalFile);
             manipulateSettingsFields();
         }
 
