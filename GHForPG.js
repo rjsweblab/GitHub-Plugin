@@ -31,7 +31,19 @@ $(function () {
         //uncomment the line below for debugging - opens devtools on Pinegrow Launch
         require('nw.gui').Window.get().showDevTools();
 
-        var fetchHtmlFragment = async function(htmlLocation) {
+        //Load in the Octokit module
+        var frameBase = framework.getBaseUrl();
+        console.log({
+            frameBase
+        });
+        var {
+            Octokit
+        } = require(crsaMakeFileFromUrl(frameBase + '/node_modules/@octokit/rest/dist-node/index.js'));
+        console.log({
+            Octokit
+        });
+
+        var fetchHtmlFragment = async function (htmlLocation) {
             const fs = require('fs');
             try {
                 return await fs.readFileSync(htmlLocation, 'utf-8');
@@ -41,51 +53,51 @@ $(function () {
         }
 
         //Function to add the click listeners to the initial menu items
-        var addInitialListeners = function() {
+        var addInitialListeners = function () {
             //Adds the click listener to the settings menu item
             let settingsMenuItem = document.getElementById('gh-settings');
-            settingsMenuItem.addEventListener('click', function(){
+            settingsMenuItem.addEventListener('click', function () {
                 $('#settingsModal').modal('show');
             });
             return;
         }
 
         //Function to add project specific click listeners
-        var addAdditionalListeners = function() {
+        var addAdditionalListeners = function () {
             return;
         }
 
         //Function to poulate settings with existing values, clear settings, save new settings.
-        var manipulateSettingsFields = function() {
+        var manipulateSettingsFields = function () {
             let userNameField = document.getElementById('gh-user-name');
             let accountTokenField = document.getElementById('gh-token');
             let clearSettingsButton = document.getElementById('gh-clear-settings');
             let saveSettingsButton = document.getElementById('gh-save-settings');
-
-            console.log({saveSettingsButton});
             let cancelSettingsButton = document.getElementById('gh-cancel-settings');
-            if(localStorage.getItem('gh-settings-user-name')){
+
+            if (localStorage.getItem('gh-settings-user-name')) {
                 userNameField.value = localStorage.getItem('gh-settings-user-name');
                 accountTokenField.value = localStorage.getItem('gh-settings-token');
             };
-            clearSettingsButton.addEventListener('click', function(){
+            clearSettingsButton.addEventListener('click', function () {
                 localStorage.removeItem('gh-settings-user-name');
                 localStorage.removeItem('gh-settings-token');
                 userNameField.value = '';
                 accountTokenField.value = '';
             });
-            saveSettingsButton.addEventListener('click', function(){
+            saveSettingsButton.addEventListener('click', function () {
                 localStorage.setItem('gh-settings-user-name', userNameField.value);
                 localStorage.setItem('gh-settings-token', accountTokenField.value);
-                saveSettingsButton.className = 'btn btn-success';
+                verifyGitHubAccount();
+                //saveSettingsButton.className = 'btn btn-success';
             });
-            cancelSettingsButton.addEventListener('click', function(){
+            cancelSettingsButton.addEventListener('click', function () {
                 saveSettingsButton.className = 'btn btn-primary';
             })
         }
 
         //Function to add settings modal to the page
-        var addSettingsModal = async function() {
+        var addSettingsModal = async function () {
             let modalDiv = document.createElement('div');
             modalDiv.setAttribute('id', 'settingsModalContainer');
             let theApp = document.getElementById('pgapp');
@@ -111,12 +123,12 @@ $(function () {
         `);
 
         //Adds the main GitHub menu to Pinegrow upon open
-        pinegrow.addPluginControlToTopbar(framework, $menu, true, function(){
+        pinegrow.addPluginControlToTopbar(framework, $menu, true, function () {
             addSettingsModal();
             addInitialListeners();
             // Check if we are opening another project in a new window 
             if (pinegrow.getCurrentProject()) {
-              addToGHMenu();
+                addToGHMenu();
             }
         });
 
@@ -128,29 +140,51 @@ $(function () {
         //Removes extra menu items on project close
         pinegrow.addEventHandler('on_project_closed', removeFromGHMenu);
 
-        function addToGHMenu () {
-          // first check existence of additional menu to avoid double entries to the GH Menu
-          if (!document.getElementById('stage-changes')) {
-            let targetMenu = document.getElementById('gh-dropdown');
-            let newItems = document.createDocumentFragment();
-            let listOne = document.createElement('li');
-            // rjs: removed variables menuItemOne and menuItemTwo
-            listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
-            newItems.appendChild(listOne);
-            let listTwo = document.createElement('li');
-            listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
-            newItems.appendChild(listTwo);
-            // rjs: using namedItem is more robust then using hardcoded index-number
-            // rjs: this namedItem needs an id on the element <hr> in the menu
-            let menuDivider = targetMenu.children.namedItem('ruler-one');
-            targetMenu.insertBefore(newItems, menuDivider);
-            addAdditionalListeners();
-          }
+        function addToGHMenu() {
+            // first check existence of additional menu to avoid double entries to the GH Menu
+            if (!document.getElementById('stage-changes')) {
+                let targetMenu = document.getElementById('gh-dropdown');
+                let newItems = document.createDocumentFragment();
+                let listOne = document.createElement('li');
+                // rjs: removed variables menuItemOne and menuItemTwo
+                listOne.innerHTML = '<a href="#" id="stage-changes">Stage Changes</a>';
+                newItems.appendChild(listOne);
+                let listTwo = document.createElement('li');
+                listTwo.innerHTML = '<a href="#" id="commit-changes">Commit Changes</a>';
+                newItems.appendChild(listTwo);
+                // rjs: using namedItem is more robust then using hardcoded index-number
+                // rjs: this namedItem needs an id on the element <hr> in the menu
+                let menuDivider = targetMenu.children.namedItem('ruler-one');
+                targetMenu.insertBefore(newItems, menuDivider);
+                addAdditionalListeners();
+            }
         }
 
-        function removeFromGHMenu (pagenull, project) {
-          document.getElementById('stage-changes').remove();
-          document.getElementById('commit-changes').remove();
+        function removeFromGHMenu(pagenull, project) {
+            document.getElementById('stage-changes').remove();
+            document.getElementById('commit-changes').remove();
         }
+
+        async function verifyGitHubAccount() {
+            if (localStorage.getItem('gh-settings-token') && localStorage.getItem('gh-settings-user-name')) {
+                let userName = localStorage.getItem('gh-settings-user-name');
+                let token = localStorage.getItem('gh-settings-token');
+                const octokit = new Octokit({
+                    type: 'token',
+                    auth: token,
+                });
+                
+                try {
+                    console.log({
+                        octokit
+                    });
+                    let isAuthenticated = await octokit.users.getAuthenticated();
+                    console.log({isAuthenticated});
+                } catch (err) {
+                    console.log('in error');
+                    console.error(err);
+                }
+            }
+        };
     });
 });
